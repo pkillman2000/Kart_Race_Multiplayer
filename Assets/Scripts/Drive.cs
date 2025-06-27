@@ -38,6 +38,7 @@ public class Drive : MonoBehaviour
     [SerializeField]
     private GameObject _brakeLights;
 
+    [Header("Engine")]
     // Engine SFX
     [SerializeField]
     private AudioSource _engineSound;
@@ -65,18 +66,13 @@ public class Drive : MonoBehaviour
 
         _brakeLights.SetActive(false);
     }
-    
+
     private void Update()
     {
-        float acceleration = Input.GetAxis("Vertical");
-        float steeringAngle = Input.GetAxis("Horizontal");
-        float brake = Input.GetAxis("Jump"); // Spacebar
-        Go(acceleration, steeringAngle, brake);
-        
         CheckForSkid();
         CalculateEngineSound();
-    }
 
+    }
     public void Go(float acceleration, float steeringAngle, float brake)
     {
         Quaternion quat;
@@ -95,6 +91,7 @@ public class Drive : MonoBehaviour
 
         // Affect each tire
         for (int i = 0; i < _wheelColliders.Length; i++)
+
         {
             // Only front tires steer
             if (_wheelColliders[i].gameObject.tag == "Steer Tire")
@@ -103,10 +100,10 @@ public class Drive : MonoBehaviour
             }
 
             // Brake
-            if (_wheelColliders[i].gameObject.tag == "Brake Tire")
-            {
+            //if (_wheelColliders[i].gameObject.tag == "Brake Tire")
+            //{
                 _wheelColliders[i].brakeTorque = brake;
-            }
+            //}
             // Brake Lights
             if(brake != 0)
             {
@@ -131,7 +128,7 @@ public class Drive : MonoBehaviour
     }
 
     // Play soundeffect if car is skidding
-    private void CheckForSkid()
+    public void CheckForSkid()
     {
         int numSkidding = 0;
 
@@ -162,7 +159,7 @@ public class Drive : MonoBehaviour
         }
     }
 
-    private void CalculateEngineSound()
+    public void CalculateEngineSound()
     {
         float gearPercentage = (1 / (float)_numGears);
         float targetGearFactor = Mathf.InverseLerp(gearPercentage * _currentGear, gearPercentage * (_currentGear + 1), Mathf.Abs(_currentSpeed/_maxSpeed));
@@ -188,5 +185,20 @@ public class Drive : MonoBehaviour
 
         float pitch = Mathf.Lerp(_lowPitch, _highPitch, _rpm);
         _engineSound.pitch = Mathf.Min(_highPitch, pitch) * 0.25f;
+    }
+
+    public Rigidbody GetRigidBody()
+    {
+        return _rigidbody;
+    }
+
+    public float GetCurrentSpeed()
+    {
+        return _currentSpeed;
+    }
+
+    public float GetMaxSpeed()
+    {
+        return _maxSpeed;
     }
 }
